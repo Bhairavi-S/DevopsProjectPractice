@@ -1,0 +1,83 @@
+trigger:
+  - main
+
+pool:
+  name: Default
+  demands:
+    - agent.name -equals Test Playwright
+
+stages:
+  - stage: Build
+    displayName: 'Build stage'
+    jobs:
+      - job: Build
+        displayName: 'Build job'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18'
+            displayName: 'Install Node.js'
+          - script: npm ci
+            displayName: 'npm ci'
+          - script: npx playwright install --with-deps
+            displayName: 'Install Playwright browsers'
+
+  - stage: Testing
+    displayName: 'Test stage'
+    dependsOn: Build
+    jobs:
+      - job: Test_Playwright
+        displayName: 'Playwright Test job'
+        steps:
+          - script: |
+              mkdir -p combined-report/api
+              npx playwright test $(API_Test) 
+              mv playwright-report/* combined-report/api
+            displayName: 'Run Playwright API tests '
+            env:
+              CI: 'true'
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/e2e-*.xml'
+            condition: succeededOrFailed()
+          
+          - script: |
+              mkdir -p combined-report/UI
+              npx playwright test $(UI_Test01) $(UI_Test02) $(UI_Test03)
+              mv playwright-report/* combined-report/UI
+            displayName: 'Run Playwright UI tests'
+            env:
+              CI: 'true'
+
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: combined-report
+              artifact: playwright-report
+              publishLocation: 'pipeline'
+            condition: succeededOrFailed()
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/e2e-*.xml'
+            condition: succeededOrFailed()
+
+
+         
+
+          
+         
+
+
+
+
+          
+
+         
+
+          
+         
+
+

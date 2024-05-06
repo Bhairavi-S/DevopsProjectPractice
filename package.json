@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "playwright": "^1.35.1"
+  },
+  "devDependencies": {
+    "@cliqz/adblocker-playwright": "^1.26.6",
+    "@faker-js/faker": "^8.0.2",
+    "@playwright/test": "^1.35.1",
+    "@types/node": "^20.8.9",
+    "cross-fetch": "^4.0.0",
+    "lcov-result-merger": "^5.0.0",
+    "mocha": "^10.3.0",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "start": "tsc && node ./dist/index.js"
+  }
+}
